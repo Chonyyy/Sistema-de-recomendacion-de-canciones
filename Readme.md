@@ -9,3 +9,8 @@ Embeddings de letras: Una vez que tienes las letras limpias, usar técnicas de N
 Similitud de canciones: Con los vectores de incrustación de las letras, calcular la similitud entre diferentes canciones. La similitud se puede calcular utilizando medidas como la distancia euclidiana o la similitud del coseno 4.
 
 Generación de recomendaciones: Finalmente, cuando se recibe un texto, puedo transformarlo en un vector de incrustación y encontrar las canciones más similares a este vector. Estas canciones son las que se recomendarán.
+
+
+## Para correr el visual:
+
+streamlit run src/gui.py 
