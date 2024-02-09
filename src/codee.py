@@ -29,10 +29,10 @@ def remove_punctuation(text):
 def correct_spelling(text):
     english_words = set(words.words())
     spell = SpellChecker()
-    input_words = text.split()  # Cambia el nombre de la variable aquí
+    input_words = text.split()
     correction_cache = {}
     corrected_words = []
-    for word in input_words:  # Usa el nuevo nombre de variable aquí
+    for word in input_words:  
         if word not in correction_cache:
             if word.lower() not in english_words:
                 correction = spell.correction(word)
