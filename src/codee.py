@@ -1,11 +1,11 @@
 import json
 import string
+from nltk.corpus import words
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 from spellchecker import SpellChecker
-from nltk.corpus import words
 
 def expand_contractions(text):
     contraction_dict = {"ain't": "am not", "aren't": "are not","can't": "cannot", "'cause": "because",  
