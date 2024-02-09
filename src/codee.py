@@ -1,23 +1,59 @@
 import json
+import string
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
+from spellchecker import SpellChecker
+
+def expand_contractions(text):
+    contraction_dict = {"ain't": "am not", "aren't": "are not","can't": "cannot", "'cause": "because",  
+                        "could've": "could have", "couldn't": "could not", "didn't": "did not",  "doesn't": "does not",  
+                        "don't": "do not", "hadn't": "had not", "hasn't": "has not", "haven't": "have not"}
+    words = text.split()
+    expanded_words = []
+    for word in words:
+        if word in contraction_dict:
+            expanded_words.extend(contraction_dict[word].split())
+        else:
+            expanded_words.append(word)
+    return ' '.join(expanded_words)
+
+def remove_punctuation(text):
+    translator = str.maketrans('', '', string.punctuation)
+    return text.translate(translator)
+
+def correct_spelling(text):
+    spell = SpellChecker()
+    words = text.split()
+    correction_cache = {}
+    corrected_words = []
+    for word in words:
+        if word not in correction_cache:
+            correction = spell.correction(word)
+            correction_cache[word] = correction if correction is not None else word
+        corrected_words.append(correction_cache[word])
+    return ' '.join(corrected_words)
+
 
 def preprocess_song(song):
     stop_words = set(stopwords.words('english'))
-    lyrics = song['lyrics'].lower().split()
-    tokens = word_tokenize(' '.join(lyrics))
+    lyrics = song['lyrics'].lower()
+    lyrics = expand_contractions(lyrics)
+    lyrics = remove_punctuation(lyrics)
+    tokens = word_tokenize(lyrics)
     tokens = [word for word in tokens if word not in stop_words]
     return ' '.join(tokens)
 
 
 def preprocess_input(input_text):
     stop_words = set(stopwords.words('english'))
+    input_text = expand_contractions(input_text)
+    input_text = remove_punctuation(input_text)
+    input_text = correct_spelling(input_text)  # Agrega la corrección ortográfica aquí
     tokens = word_tokenize(input_text.lower())
     tokens = [word for word in tokens if word not in stop_words]
     return ' '.join(tokens)
-
 
 
 #calcular la similitud entre las canciones:
@@ -62,4 +98,5 @@ def recommend_songs(input_text):
 #test
 #esperado:Lose Yourself
 input_text="certified quality a dat da girl dem need and dem not stop cry without apology buck dem da right waydat my policy sean paul alongsidenow hear what da man say beyonce dutty ya dutty ya dutty ya beyonce sing it now ya baby boy you stay on my mind fulfill my fantasies i think about you all the time i see you in my dreams baby boy not a day goes by without my fantasies i think about you all the time i see you in my dreams ah oh my baby's fly baby oh yes no hurt me so good baby oh i'm so wrapped up in your love let me go let me breathe stay out my fantasies ya ready gimme da ting dat ya ready get ya live and tell me all about da tings that you will fantasize i know you dig da way me step da way me make my stride follow your feelings "
-print(recommend_songs(input_text))
+input_text2="hell word"
+print(recommend_songs(input_text2))

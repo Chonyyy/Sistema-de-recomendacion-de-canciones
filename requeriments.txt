@@ -1,9 +1,11 @@
 sklearn
 numpy
 gensim
+pyspellchecker
+streamlit
+pandas
 nltk
 nltk.download('punkt')
 nltk.download('stopwords')
-
 
 # streamlit run app.py 
