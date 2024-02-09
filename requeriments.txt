@@ -5,13 +5,5 @@ nltk
 nltk.download('punkt')
 nltk.download('stopwords')
 
-{
-    "Imagine": {
-        "title": "Imagine",
-        "lyrics": "Imagine there's no heaven..."
-    },
-    "Hotel California": {
-        "title": "Hotel California",
-        "lyrics": "On a dark desert highway..."
-    }   
-}
+
+# streamlit run app.py 
