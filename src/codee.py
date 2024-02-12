@@ -1,5 +1,9 @@
 import json
 import string
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('words')
 from nltk.corpus import words
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -85,6 +89,8 @@ def get_song_similarities(input_text,model,preprocessed_songs):
             similarity = cosine_similarity(input_vectors, song_vectors)[0, 0] # Obtén el valor de similitud de la matriz
             similarities.append((song_title, similarity))
         similarities.sort(key=lambda x: x[1], reverse=True)
+        print(similarities)
+        
     except:
         print("Empty")    
         
@@ -94,7 +100,7 @@ def get_song_similarities(input_text,model,preprocessed_songs):
 #generar recomendaciones:
 def recommend_songs(input_text):
     
-    print(input_text)
+    
     with open('data/songs1.json', 'r',encoding='utf-8') as f:
         try:
             songs = json.load(f)
@@ -108,7 +114,7 @@ def recommend_songs(input_text):
     model = Word2Vec(sentences, window=5, min_count=1, workers=4)
     model.save("word2vec.model")       
     similarities,fixed_words = get_song_similarities(input_text,model,preprocessed_songs)
-    return [song for song, _ in similarities[:10]],fixed_words
+    return [song for song, _ in similarities[:30]],fixed_words
 
 
 #test

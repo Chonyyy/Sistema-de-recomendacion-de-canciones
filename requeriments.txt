@@ -1,10 +1,9 @@
-sklearn
-numpy
+
 gensim
 pyspellchecker
-streamlit
 pandas
+scikit-learn
+numpy
 nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('words')
+streamlit
+simplejson
