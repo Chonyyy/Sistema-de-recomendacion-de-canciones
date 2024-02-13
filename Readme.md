@@ -5,6 +5,7 @@
 ## modelo de SRI implementado.
 -Modelo Vector Generalizado
 ## Consideraciones tomadas a la hora de desarrollar la solución.
+Se determinó que el modelo no funciona correctamente con un corpus de un número de canciones superior a 666. Además, se ha detectado que solo se utilizan las letras y el título, a pesar de haber podido ampliar la utilización de otros datos reunidos en la base de datos.
 ##  Explicación de cómo ejecutar el proyecto. Definición de la consulta.
 Para ejecutar el proyecto:
 -streamlit run src/gui.py 
