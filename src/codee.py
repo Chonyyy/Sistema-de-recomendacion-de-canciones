@@ -126,7 +126,6 @@ def preprocess_lyrics(input_text):
     return ' '.join(tokens)
 
 
-#calcular la similitud entre las canciones:
 def get_song_similarities(input_text,model,preprocessed_songs):
     '''
     Calcula la similitud entre el texto de entrada y las canciones preprocesadas.
@@ -152,13 +151,13 @@ def get_song_similarities(input_text,model,preprocessed_songs):
             similarity = cosine_similarity(input_vectors, song_vectors)[0, 0] # Obtén el valor de similitud de la matriz
             similarities.append((song_title, similarity))
         similarities.sort(key=lambda x: x[1], reverse=True)
+        print(similarities)
     except:
         print("Empty")    
-        
+    
     return similarities,fixed_words
 
 
-#generar recomendaciones:
 def recommend_songs(input_text):
     '''
     Genera recomendaciones de canciones basadas en el texto de entrada.
