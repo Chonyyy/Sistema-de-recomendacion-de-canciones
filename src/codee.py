@@ -1,9 +1,5 @@
 import json
 import string
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('words')
 from nltk.corpus import words
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -12,6 +8,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from spellchecker import SpellChecker
 
 def expand_contractions(text):
+    '''
+    Expande las contracciones en el texto. Por ejemplo, "ain't" se expande a "am not".
+    
+    Parameters:
+        text (str): Texto de entrada para expandir.
+    
+    Returns:
+        str: Texto con las contracciones expandidas.
+    '''
     contraction_dict = {"ain't": "am not", "aren't": "are not","can't": "cannot", "'cause": "because",  
                         "could've": "could have", "couldn't": "could not", "didn't": "did not",  "doesn't": "does not",  
                         "don't": "do not", "hadn't": "had not", "hasn't": "has not", "haven't": "have not"}
@@ -25,12 +30,31 @@ def expand_contractions(text):
     return ' '.join(expanded_words)
 
 def remove_punctuation(text):
+    '''
+    Elimina la puntuación del texto.
+    
+    Parameters:
+        text (str): Texto de entrada.
+    
+    Returns:
+        str: Texto sin puntuación.
+    '''
     translator = str.maketrans('', '', string.punctuation)
     return text.translate(translator)
 
 
 
 def correct_spelling(text):
+    '''
+    Corrige la ortografía de las palabras en el texto.
+    
+    Parameters:
+        text (str): Texto de entrada.
+    
+    Returns:
+        tuple: Tupla que contiene el texto con las palabras corregidas y una lista de las palabras corregidas.
+    '''
+    
     english_words = set(words.words())
     spell = SpellChecker()
     input_words = text.split()
@@ -48,6 +72,15 @@ def correct_spelling(text):
 
 
 def preprocess_song(song):
+    '''
+    Preprocesa una canción eliminando la puntuación, las palabras vacías y las contracciones.
+    
+    Parameters:
+        song (dict): Diccionario que contiene los datos de una canción.
+    
+    Returns:
+        str: Letra de la canción preprocesada.
+    '''
     stop_words = set(stopwords.words('english'))
     lyrics = song['lyrics'].lower()
     lyrics = expand_contractions(lyrics)
@@ -58,6 +91,15 @@ def preprocess_song(song):
 
 
 def preprocess_input(input_text):
+    '''
+    Preprocesa el texto de entrada eliminando la puntuación, las palabras vacías y las contracciones.
+    
+    Parameters:
+        input_text (str): Texto de entrada.
+    
+    Returns:
+        tuple: Tupla que contiene el texto de entrada preprocesado y una lista de las palabras corregidas.
+    '''
     stop_words = set(stopwords.words('english'))
     input_text = expand_contractions(input_text)
     input_text = remove_punctuation(input_text)
@@ -67,6 +109,15 @@ def preprocess_input(input_text):
     return ' '.join(tokens),fixed_words
 
 def preprocess_lyrics(input_text):
+    '''
+    Preprocesa la letra de una canción eliminando la puntuación y las palabras vacías.
+    
+    Parameters:
+        input_text (str): Texto de entrada.
+    
+    Returns:
+        str: Letra de la canción preprocesada.
+    '''
     stop_words = set(stopwords.words('english'))
     input_text = expand_contractions(input_text)
     input_text = remove_punctuation(input_text)
@@ -77,6 +128,18 @@ def preprocess_lyrics(input_text):
 
 #calcular la similitud entre las canciones:
 def get_song_similarities(input_text,model,preprocessed_songs):
+    '''
+    Calcula la similitud entre el texto de entrada y las canciones preprocesadas.
+    
+    Parameters:
+        input_text (str): Texto de entrada.
+        model: Modelo Word2Vec utilizado para calcular las similitudes.
+        preprocessed_songs (dict): Diccionario que contiene las canciones preprocesadas.
+    
+    Returns:
+        list: Lista de tuplas que contiene el título de la canción y su similitud con el texto de entrada.
+        list: Lista de las palabras corregidas en el texto de entrada.
+    '''
     input_tokens,fixed_words = preprocess_input(input_text)
     input_tokens = input_tokens.split()
     input_vectors = [model.wv[token] for token in input_tokens if token in model.wv]
@@ -89,8 +152,6 @@ def get_song_similarities(input_text,model,preprocessed_songs):
             similarity = cosine_similarity(input_vectors, song_vectors)[0, 0] # Obtén el valor de similitud de la matriz
             similarities.append((song_title, similarity))
         similarities.sort(key=lambda x: x[1], reverse=True)
-        print(similarities)
-        
     except:
         print("Empty")    
         
@@ -99,8 +160,16 @@ def get_song_similarities(input_text,model,preprocessed_songs):
 
 #generar recomendaciones:
 def recommend_songs(input_text):
+    '''
+    Genera recomendaciones de canciones basadas en el texto de entrada.
     
+    Parameters:
+        input_text (str): Texto de entrada.
     
+    Returns:
+        list: Lista de títulos de canciones recomendadas.
+        list: Lista de las palabras corregidas en el texto de entrada.
+    '''
     with open('data/songs1.json', 'r',encoding='utf-8') as f:
         try:
             songs = json.load(f)
@@ -109,15 +178,12 @@ def recommend_songs(input_text):
             
             
     preprocessed_songs = {title: preprocess_song(song) for title, song in songs.items()}
+    
     #crear los embeddings de las letras usando Word2Vec:
     sentences = [list(map(str, lyric.split())) for lyric in preprocessed_songs.values()] 
     model = Word2Vec(sentences, window=5, min_count=1, workers=4)
     model.save("word2vec.model")       
     similarities,fixed_words = get_song_similarities(input_text,model,preprocessed_songs)
-    return [song for song, _ in similarities[:30]],fixed_words
+    return [song for song, _ in similarities[:10]],fixed_words
 
 
-#test
-input_text="certified quality a dat da girl dem need and dem not stop cry without apology buck dem da right waydat my policy sean paul alongsidenow hear what da man say beyonce dutty ya dutty ya dutty ya beyonce sing it now ya baby boy you stay on my mind fulfill my fantasies i think about you all the time i see you in my dreams baby boy not a day goes by without my fantasies i think about you all the time i see you in my dreams ah oh my baby's fly baby oh yes no hurt me so good baby oh i'm so wrapped up in your love let me go let me breathe stay out my fantasies ya ready gimme da ting dat ya ready get ya live and tell me all about da tings that you will fantasize i know you dig da way me step da way me make my stride follow your feelings "
-input_text2="wofgh"
-print(recommend_songs(input_text2))

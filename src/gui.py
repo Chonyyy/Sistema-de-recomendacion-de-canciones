@@ -19,6 +19,6 @@ st.write("Entrada corregida:")
 st.write(" ".join(fixed_words))
 
 # Muestra las canciones recomendadas en la aplicación Streamlit
-st.markdown("<h2 style='text-align: center;'>Canciónes Recomendadas</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>Canciones Recomendadas</h2>", unsafe_allow_html=True)
 st.table(pd.DataFrame(recommended_songs, columns=["Nombre de la Canción"]))
 
